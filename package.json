@@ -1,0 +1,20 @@
+{
+  "name": "@hexlet/code",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "RSS Generator - Hexlet project",
+  "main": "./src/index.js",
+  "scripts": {
+    "test": "jest --colors"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/onlydisco/frontend-project-11.git"
+  },
+  "author": "Mukhin Sergey",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/onlydisco/frontend-project-11/issues"
+  },
+  "homepage": "https://github.com/onlydisco/frontend-project-11#readme"
+}
