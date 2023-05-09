@@ -1,0 +1,22 @@
+{
+    "env": {
+      "browser": true,
+      "node": true,
+      "jest": true
+    },
+    "parserOptions": {
+      "ecmaVersion": "latest",
+      "sourceType": "module"      
+    },
+    "extends": [
+      "airbnb-base",
+      "eslint:recommended",
+      "plugin:prettier/recommended",
+      "plugin:jest/recommended"
+    ],
+    "plugins": ["prettier", "jest"],    
+    "rules": {
+      "no-duplicate-imports": "error",
+      "no-console": "off"         
+    }
+  }
