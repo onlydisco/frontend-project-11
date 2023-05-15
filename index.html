@@ -4,22 +4,37 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>RSS Generator</title>
+  <title>RSS Aggregator</title>
 </head>
 
-<body>
-  <div class="container">
-    <h1>RSS Generator</h1>
-    <form class="row">
-      <div class="col-auto">
-        <label class="visually-hidden" for="input">RSS ссылка</label>
-        <input class="form-control mb-3" id="input" type="text" placeholder="Введите RSS ссылку">
+<body class="d-flex flex-column min-vh-100">
+  <main class="flex-grow-1">
+    <section class="container-fluid bg-dark p-5">
+      <div class="row">
+        <div class="col-md-10 col-lg-8 mx-auto text-white">
+          <h1 class="display-3 mb-0">RSS агрегатор</h1>
+          <p class="lead">Начните читать RSS сегодня! Это легко, это красиво.</p>
+          <form class="rss-form text-body">
+            <div class="row">
+              <div class="col">
+                <div class="form-floating">
+                  <input class="form-control w-100" id="url-input" name="url" aria-label="url" type="url"
+                    placeholder="ссылка RSS" autocomplete="off" autofocus required>
+                  <label for="url-input">RSS ссылка</label>
+                </div>
+              </div>
+              <div class="col-auto">
+                <button class="h-100 btn btn-lg btn-primary px-sm-5" type="submit" aria-label="add">Добавить</button>
+              </div>
+            </div>
+          </form>
+          <p class="mt-2 mb-0 text-muted">Пример: https://ru.hexlet.io/lessons.rss</p>
+          <p class="feedback m-0 position-absolute small text-danger"></p>
+        </div>
       </div>
-      <div class="col-auto">
-        <button class="btn btn-primary mb-3" type="submit">Добавить</button>
-      </div>
-    </form>
-  </div>
+    </section>
+  </main>
+
 
 </body>
 
