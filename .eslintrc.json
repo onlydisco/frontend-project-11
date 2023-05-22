@@ -17,6 +17,7 @@
     "plugins": ["prettier", "jest"],    
     "rules": {
       "no-duplicate-imports": "error",
-      "no-console": "off"         
+      "no-console": "off",
+      "import/extensions": ["error", "ignorePackages", { "js": "always" }]
     }
   }

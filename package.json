@@ -48,6 +48,8 @@
 		"webpack-dev-server": "^4.13.3"
 	},
 	"dependencies": {
-		"bootstrap": "^5.2.3"
+		"bootstrap": "^5.2.3",
+		"on-change": "^4.0.2",
+		"yup": "^1.1.1"
 	}
 }
