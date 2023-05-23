@@ -12,7 +12,7 @@ const init = () => {
 			link: null,
 			validLinks: [],
 		},
-		feedback: '',
+		feedback: null,
 	};
 
 	const elements = {
@@ -59,7 +59,7 @@ const init = () => {
 			.validate(watchedState.form.link)
 			.then((link) => {
 				watchedState.form.validLinks.push(link);
-				watchedState.feedback = '';
+				watchedState.feedback = null;
 				watchedState.form.processState = 'valid';
 				console.log(state);
 			})
@@ -70,7 +70,7 @@ const init = () => {
 					case 'ValidationError':
 						watchedState.form.processState = 'invalid';
 						watchedState.feedback = errorCode;
-						console.error(error.message);
+						console.error(error);
 						console.log(state);
 						break;
 					default:
