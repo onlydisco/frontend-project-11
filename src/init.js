@@ -59,6 +59,7 @@ const init = () => {
 			.validate(watchedState.form.link)
 			.then((link) => {
 				watchedState.form.validLinks.push(link);
+				watchedState.feedback = '';
 				watchedState.form.processState = 'valid';
 				console.log(state);
 			})
