@@ -10,27 +10,28 @@ const renderInitText = (elements, i18nInstance) => {
 	example.textContent = i18nInstance.t('example');
 };
 
-const renderFeedback = (elements, value, i18nInstance) => {
-	const { feedback } = elements;
+const renderAppProcessState = (elements, appProcessState) => {
+	const { form, input, submit } = elements;
 
-	feedback.textContent = i18nInstance.t(value);
-
-	switch (value) {
-		case 'feedback.succes':
-			feedback.classList.replace('text-danger', 'text-success');
+	switch (appProcessState) {
+		case 'loading':
+			submit.disabled = true;
 			break;
-		case 'feedback.errors.empty_field':
-		case 'feedback.errors.invalid_url':
-		case 'feedback.errors.duplicate_url':
-			feedback.classList.replace('text-success', 'text-danger');
+		case 'loaded':
+			submit.disabled = false;
+			form.reset();
+			input.focus();
+			break;
+		case 'initialization':
 			break;
 		default:
-			throw new Error(`Unknown feedback value ${value}`);
+			throw new Error(`Unknown application proccess state ${appProcessState}`);
 	}
 };
 
 const renderFormProcessState = (elements, formProcessState) => {
 	const { form, input, submit } = elements;
+
 	switch (formProcessState) {
 		case 'filling':
 			submit.disabled = false;
@@ -53,18 +54,40 @@ const renderFormProcessState = (elements, formProcessState) => {
 	}
 };
 
+const renderFeedback = (elements, value, i18nInstance) => {
+	const { feedback } = elements;
+
+	feedback.textContent = i18nInstance.t(value);
+
+	switch (value) {
+		case 'feedback.succes':
+			feedback.classList.replace('text-danger', 'text-success');
+			break;
+		case 'feedback.errors.empty_field':
+		case 'feedback.errors.invalid_url':
+		case 'feedback.errors.duplicate_url':
+			feedback.classList.replace('text-success', 'text-danger');
+			break;
+		default:
+			throw new Error(`Unknown feedback value ${value}`);
+	}
+};
+
 const watch = (state, elements, i18nInstance) => {
 	renderInitText(elements, i18nInstance);
 
 	const watchedState = onChange(state, (path, value) => {
 		switch (path) {
+			case 'appProcessState':
+				renderAppProcessState(elements, value);
+				break;
 			case 'form.processState':
 				renderFormProcessState(elements, value);
 				break;
 			case 'form.link':
 			case 'form.validLinks':
 				break;
-			case 'feedback':
+			case 'app.feedback':
 				renderFeedback(elements, value, i18nInstance);
 				break;
 			default:

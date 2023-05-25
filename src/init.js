@@ -1,18 +1,37 @@
 import * as yup from 'yup';
 import i18next from 'i18next';
+import axios from 'axios';
 import resources from './locales/index.js';
 import watch from './view.js';
+import parse from './parser.js';
 
 const yupSchema = (validLinks) => yup.string().required().url().notOneOf(validLinks);
 
+const proxy = (link) => {
+	const base = 'https://allorigins.hexlet.app/';
+	const href = new URL('/get', base);
+	href.searchParams.append('disableCache', 'true');
+	href.searchParams.append('url', link);
+
+	return href;
+};
+
 const init = () => {
 	const state = {
+		app: {
+			processState: 'initialization', // initialization, loading, loaded, parser_error, network_error, spying
+			language: 'ru',
+			feedback: null,
+		},
 		form: {
 			processState: 'filling', // filling, validating, valid, invalid
 			link: null,
 			validLinks: [],
 		},
-		feedback: null,
+		data: {
+			feeds: [],
+			posts: [],
+		},
 	};
 
 	const elements = {
@@ -24,11 +43,13 @@ const init = () => {
 		submit: document.querySelector('button[type="submit"]'),
 		example: document.getElementById('example'),
 		feedback: document.querySelector('.feedback'),
+		feeds: document.querySelector('.feeds'),
+		posts: document.querySelector('.posts'),
 	};
 
 	const i18nInstance = i18next.createInstance();
 	i18nInstance.init({
-		lng: 'ru',
+		lng: state.app.language,
 		debug: false,
 		resources,
 	});
@@ -58,18 +79,30 @@ const init = () => {
 		schema
 			.validate(watchedState.form.link)
 			.then((link) => {
-				watchedState.form.validLinks.push(link);
-				watchedState.feedback = null;
+				watchedState.app.feedback = null;
 				watchedState.form.processState = 'valid';
+				watchedState.form.validLinks.push(link);
+
 				console.log(state);
+
+				const proxyUrl = proxy(link);
+				const response = axios.get(proxyUrl);
+
+				return response;
+			})
+			.then((response) => response.data.contents)
+			.then((content) => {
+				const parsedContent = parse(content);
+				console.log('.then -> parsedContent:', parsedContent);
 			})
 			.catch((error) => {
 				const [errorCode] = error.errors;
 
 				switch (error.name) {
 					case 'ValidationError':
+						watchedState.app.feedback = errorCode;
 						watchedState.form.processState = 'invalid';
-						watchedState.feedback = errorCode;
+
 						console.error(error);
 						console.log(state);
 						break;
