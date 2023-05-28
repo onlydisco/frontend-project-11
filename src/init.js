@@ -4,22 +4,23 @@ import axios from 'axios';
 import resources from './locales/index.js';
 import watch from './view.js';
 import parse from './parser.js';
+import generateId from './idgenerator.js';
 
 const yupSchema = (validLinks) => yup.string().required().url().notOneOf(validLinks);
 
 const proxy = (link) => {
 	const base = 'https://allorigins.hexlet.app/';
-	const href = new URL('/get', base);
-	href.searchParams.append('disableCache', 'true');
-	href.searchParams.append('url', link);
+	const url = new URL('/get', base);
+	url.searchParams.append('disableCache', 'true');
+	url.searchParams.append('url', link);
 
-	return href;
+	return url;
 };
 
 const init = () => {
 	const state = {
 		app: {
-			processState: 'initialization', // initialization, loading, loaded, parser_error, network_error, spying
+			processState: 'initialization', // initialization, loading, loaded, ParsingError, networkError, searching
 			language: 'ru',
 			feedback: null,
 		},
@@ -70,6 +71,8 @@ const init = () => {
 		watchedState.form.link = event.target.value;
 	});
 
+	const getId = generateId();
+
 	elements.form.addEventListener('submit', (event) => {
 		event.preventDefault();
 
@@ -83,8 +86,6 @@ const init = () => {
 				watchedState.form.processState = 'valid';
 				watchedState.form.validLinks.push(link);
 
-				console.log(state);
-
 				const proxyUrl = proxy(link);
 				const response = axios.get(proxyUrl);
 
@@ -93,18 +94,39 @@ const init = () => {
 			.then((response) => response.data.contents)
 			.then((content) => {
 				const parsedContent = parse(content);
-				console.log('.then -> parsedContent:', parsedContent);
+				const { feed, posts } = parsedContent;
+
+				if (!feed || !posts) throw new Error(`ParsingError`);
+
+				feed.id = getId();
+				posts.map((post) => {
+					post.feedId = feed.id;
+					post.id = getId();
+					return post;
+				});
+
+				watchedState.data.feeds.push(feed);
+				posts.map((post) => {
+					watchedState.data.posts.push(post);
+					return watchedState.data.posts;
+				});
+
+				console.log(watchedState.data);
 			})
 			.catch((error) => {
-				const [errorCode] = error.errors;
+				console.log(error);
 
 				switch (error.name) {
 					case 'ValidationError':
+						const [errorCode] = error.errors;
 						watchedState.app.feedback = errorCode;
 						watchedState.form.processState = 'invalid';
-
-						console.error(error);
-						console.log(state);
+						break;
+					case 'Error':
+						if (error.message === 'ParsingError') {
+							watchedState.app.feedback = 'feedback.errors.parsing_error';
+							watchedState.app.processState = 'parsingError';
+						}
 						break;
 					default:
 						throw new Error(`Unknown error name ${error.name}`);

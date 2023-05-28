@@ -1,8 +1,5 @@
 export default {
 	translation: {
-		languages: {
-			ru: 'Русский',
-		},
 		header: 'RSS агрегатор',
 		cta: 'Начните читать RSS сегодня! Это легко, это красиво.',
 		form: {
@@ -16,6 +13,8 @@ export default {
 				empty_field: 'Обязательное поле',
 				invalid_url: 'Некоректный URL',
 				duplicate_url: 'Такой URL уже существует',
+				parsing_error: 'Ошибка парсинга',
+				network_error: 'Ошиба сети',
 			},
 		},
 	},

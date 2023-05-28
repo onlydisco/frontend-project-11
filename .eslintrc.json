@@ -16,6 +16,8 @@
     ],
     "plugins": ["prettier", "jest"],    
     "rules": {
+      "no-param-reassign": "off",
+      "no-case-declarations": "off",
       "no-duplicate-imports": "error",
       "no-console": "off",
       "import/extensions": ["error", "ignorePackages", { "js": "always" }]
