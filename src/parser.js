@@ -28,6 +28,8 @@ const getPosts = (doc) => {
 		const guid = itemGuid.textContent;
 		const link = itemLink.textContent;
 
+		if (!title || !description || !guid || !link) return null;
+
 		const post = { title, description, guid, link };
 
 		return post;

@@ -96,7 +96,7 @@ const init = () => {
 				const parsedContent = parse(content);
 				const { feed, posts } = parsedContent;
 
-				if (!feed || !posts) throw new Error(`ParsingError`);
+				if (!feed || !posts) throw new Error(`Parsing Error`);
 
 				feed.id = getId();
 				posts.map((post) => {
@@ -111,7 +111,11 @@ const init = () => {
 					return watchedState.data.posts;
 				});
 
-				console.log(watchedState.data);
+				watchedState.app.processState = 'loaded';
+				watchedState.app.feedback = 'feedback.succes';
+				watchedState.form.processState = 'filling';
+
+				console.log(watchedState);
 			})
 			.catch((error) => {
 				console.log(error);
@@ -123,9 +127,15 @@ const init = () => {
 						watchedState.form.processState = 'invalid';
 						break;
 					case 'Error':
-						if (error.message === 'ParsingError') {
-							watchedState.app.feedback = 'feedback.errors.parsing_error';
+						if (error.message === 'Parsing Error') {
 							watchedState.app.processState = 'parsingError';
+							watchedState.app.feedback = 'feedback.errors.parsing_error';
+						}
+						break;
+					case 'AxiosError':
+						if (error.message === 'Network Error') {
+							watchedState.app.processState = 'networkError';
+							watchedState.app.feedback = 'feedback.errors.network_error';
 						}
 						break;
 					default:

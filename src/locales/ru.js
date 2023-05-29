@@ -17,5 +17,7 @@ export default {
 				network_error: 'Ошиба сети',
 			},
 		},
+		feeds: 'Фиды',
+		posts: 'Посты',
 	},
 };

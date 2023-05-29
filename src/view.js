@@ -76,6 +76,91 @@ const renderFeedback = (elements, value, i18nInstance) => {
 	}
 };
 
+const renderFeeds = (elements, feedsList, i18nInstance) => {
+	const { feeds } = elements;
+	feeds.replaceChildren();
+
+	const card = document.createElement('div');
+	card.classList.add('card', 'border-0');
+
+	const cardBody = document.createElement('div');
+	cardBody.classList.add('card-body');
+
+	const cardTitle = document.createElement('h2');
+	cardTitle.classList.add('h4', 'card-title');
+	cardTitle.textContent = i18nInstance.t('feeds');
+
+	const list = document.createElement('ul');
+	list.classList.add('list-group', 'border-0', 'rounded-0');
+
+	feedsList.map((feed) => {
+		const listItem = document.createElement('li');
+		listItem.classList.add('list-group-item', 'border-0', 'border-end-0');
+
+		const title = document.createElement('h3');
+		title.classList.add('h6', 'm-0');
+		title.textContent = feed.title;
+
+		const description = document.createElement('p');
+		description.classList.add('small', 'm-0', 'text-black-50');
+		description.textContent = feed.description;
+
+		listItem.append(title, description);
+		list.prepend(listItem);
+
+		return list;
+	});
+
+	cardBody.append(cardTitle);
+	card.append(cardBody, list);
+	feeds.append(card);
+};
+
+const renderPosts = (elements, postsList, i18nInstance) => {
+	const { posts } = elements;
+	posts.replaceChildren();
+
+	const card = document.createElement('div');
+	card.classList.add('card', 'border-0');
+
+	const cardBody = document.createElement('div');
+	cardBody.classList.add('card-body');
+
+	const cardTitle = document.createElement('h2');
+	cardTitle.classList.add('h4', 'card-title');
+	cardTitle.textContent = i18nInstance.t('posts');
+
+	const list = document.createElement('ul');
+	list.classList.add('list-group', 'border-0', 'rounded-0');
+
+	postsList.map((post) => {
+		const listItem = document.createElement('li');
+		listItem.classList.add(
+			'list-group-item',
+			'd-flex',
+			'justify-content-between',
+			'align-items-start',
+			'border-0',
+			'border-end-0'
+		);
+
+		const link = document.createElement('a');
+		link.setAttribute('href', post.link);
+		link.setAttribute('target', 'blank');
+		link.dataset.id = post.id;
+		link.textContent = post.title;
+
+		listItem.append(link);
+		list.prepend(listItem);
+
+		return list;
+	});
+
+	cardBody.append(cardTitle);
+	card.append(cardBody, list);
+	posts.append(card);
+};
+
 const watch = (state, elements, i18nInstance) => {
 	renderInitText(elements, i18nInstance);
 
@@ -90,13 +175,14 @@ const watch = (state, elements, i18nInstance) => {
 			case 'form.link':
 			case 'form.validLinks':
 				break;
-
 			case 'app.feedback':
 				renderFeedback(elements, value, i18nInstance);
 				break;
 			case 'data.feeds':
+				renderFeeds(elements, value, i18nInstance);
 				break;
 			case 'data.posts':
+				renderPosts(elements, value, i18nInstance);
 				break;
 			default:
 				throw new Error(`Unknown state path ${path}`);
