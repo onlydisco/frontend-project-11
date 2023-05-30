@@ -1,6 +1,6 @@
 const getFeed = (doc) => {
-	const docTitle = doc.querySelector('channel title');
-	const docDescription = doc.querySelector('channel description');
+	const docTitle = doc.querySelector('channel > title');
+	const docDescription = doc.querySelector('channel > description');
 
 	if (!docTitle || !docDescription) return null;
 
@@ -13,7 +13,7 @@ const getFeed = (doc) => {
 };
 
 const getPosts = (doc) => {
-	const items = doc.querySelectorAll('item');
+	const items = doc.querySelectorAll('channel > item');
 
 	if (!items) return null;
 
@@ -28,9 +28,7 @@ const getPosts = (doc) => {
 		const guid = itemGuid.textContent;
 		const link = itemLink.textContent;
 
-		if (!title || !description || !guid || !link) return null;
-
-		const post = { title, description, guid, link };
+		const post = { title, description, link, guid };
 
 		return post;
 	});
@@ -40,7 +38,7 @@ const getPosts = (doc) => {
 
 const parse = (content) => {
 	const parser = new DOMParser();
-	const doc = parser.parseFromString(content, 'text/html');
+	const doc = parser.parseFromString(content, 'text/xml');
 
 	const feed = getFeed(doc);
 	const posts = getPosts(doc);

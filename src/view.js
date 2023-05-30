@@ -23,7 +23,10 @@ const renderAppProcessState = (elements, appProcessState) => {
 			input.focus();
 			break;
 		case 'initialization':
+			break;
 		case 'parsingError':
+		case 'networkError':
+			submit.disabled = false;
 			break;
 		default:
 			throw new Error(`Unknown application proccess state ${appProcessState}`);
@@ -146,7 +149,8 @@ const renderPosts = (elements, postsList, i18nInstance) => {
 
 		const link = document.createElement('a');
 		link.setAttribute('href', post.link);
-		link.setAttribute('target', 'blank');
+		link.setAttribute('target', '_blank');
+		link.setAttribute('rel', 'noopener noreferrer');
 		link.dataset.id = post.id;
 		link.textContent = post.title;
 

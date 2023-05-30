@@ -9,10 +9,11 @@ import generateId from './idgenerator.js';
 const yupSchema = (validLinks) => yup.string().required().url().notOneOf(validLinks);
 
 const proxy = (link) => {
-	const base = 'https://allorigins.hexlet.app/';
+	const base = 'https://allorigins.hexlet.app';
 	const url = new URL('/get', base);
 	url.searchParams.append('disableCache', 'true');
 	url.searchParams.append('url', link);
+	console.log('proxy -> url:', url);
 
 	return url;
 };
@@ -20,7 +21,7 @@ const proxy = (link) => {
 const init = () => {
 	const state = {
 		app: {
-			processState: 'initialization', // initialization, loading, loaded, ParsingError, networkError, searching
+			processState: 'initialization', // initialization, loading, loaded, parsingError, networkError, searching
 			language: 'ru',
 			feedback: null,
 		},
@@ -82,9 +83,9 @@ const init = () => {
 		schema
 			.validate(watchedState.form.link)
 			.then((link) => {
-				watchedState.app.feedback = null;
 				watchedState.form.processState = 'valid';
 				watchedState.form.validLinks.push(link);
+				watchedState.app.processState = 'loading';
 
 				const proxyUrl = proxy(link);
 				const response = axios.get(proxyUrl);
