@@ -5,6 +5,7 @@ import resources from './locales/index.js';
 import watch from './view.js';
 import parse from './parser.js';
 import generateId from './idgenerator.js';
+import updatePosts from './updater.js';
 
 const yupSchema = (validLinks) => yup.string().required().url().notOneOf(validLinks);
 
@@ -13,29 +14,28 @@ const proxy = (link) => {
 	const url = new URL('/get', base);
 	url.searchParams.append('disableCache', 'true');
 	url.searchParams.append('url', link);
-	console.log('proxy -> url:', url);
 
 	return url;
 };
 
-const init = () => {
-	const state = {
-		app: {
-			processState: 'initialization', // initialization, loading, loaded, parsingError, networkError, searching
-			language: 'ru',
-			feedback: null,
-		},
-		form: {
-			processState: 'filling', // filling, validating, valid, invalid
-			link: null,
-			validLinks: [],
-		},
-		data: {
-			feeds: [],
-			posts: [],
-		},
-	};
+const initialState = {
+	app: {
+		processState: 'initialization', // initialization, loading, loaded, parsingError, networkError, searching
+		language: 'ru',
+		feedback: null,
+	},
+	form: {
+		processState: 'filling', // filling, validating, valid, invalid
+		link: null,
+		validLinks: [],
+	},
+	data: {
+		feeds: [],
+		posts: [],
+	},
+};
 
+const init = () => {
 	const elements = {
 		header: document.querySelector('h1'),
 		cta: document.querySelector('.lead'),
@@ -51,7 +51,7 @@ const init = () => {
 
 	const i18nInstance = i18next.createInstance();
 	i18nInstance.init({
-		lng: state.app.language,
+		lng: initialState.app.language,
 		debug: false,
 		resources,
 	});
@@ -66,7 +66,7 @@ const init = () => {
 		},
 	});
 
-	const watchedState = watch(state, elements, i18nInstance);
+	const watchedState = watch(initialState, elements, i18nInstance);
 
 	elements.input.addEventListener('change', (event) => {
 		watchedState.form.link = event.target.value;
@@ -80,6 +80,8 @@ const init = () => {
 		watchedState.form.processState = 'validating';
 		const schema = yupSchema(watchedState.form.validLinks);
 
+		let proxyUrl;
+
 		schema
 			.validate(watchedState.form.link)
 			.then((link) => {
@@ -87,10 +89,9 @@ const init = () => {
 				watchedState.form.validLinks.push(link);
 				watchedState.app.processState = 'loading';
 
-				const proxyUrl = proxy(link);
-				const response = axios.get(proxyUrl);
+				proxyUrl = proxy(link);
 
-				return response;
+				return axios.get(proxyUrl);
 			})
 			.then((response) => response.data.contents)
 			.then((content) => {
@@ -100,15 +101,13 @@ const init = () => {
 				if (!feed || !posts) throw new Error(`Parsing Error`);
 
 				feed.id = getId();
+				watchedState.data.feeds.push(feed);
+
 				posts.map((post) => {
 					post.feedId = feed.id;
 					post.id = getId();
-					return post;
-				});
-
-				watchedState.data.feeds.push(feed);
-				posts.map((post) => {
 					watchedState.data.posts.push(post);
+
 					return watchedState.data.posts;
 				});
 
@@ -117,6 +116,13 @@ const init = () => {
 				watchedState.form.processState = 'filling';
 
 				console.log(watchedState);
+
+				return feed.id;
+			})
+			.then((feedId) => {
+				watchedState.app.processState = 'searching';
+				console.log('ping');
+				setTimeout(() => updatePosts(watchedState, proxyUrl, feedId, getId), 5000);
 			})
 			.catch((error) => {
 				console.log(error);

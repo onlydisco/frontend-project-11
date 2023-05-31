@@ -22,11 +22,12 @@ const renderAppProcessState = (elements, appProcessState) => {
 			form.reset();
 			input.focus();
 			break;
-		case 'initialization':
-			break;
 		case 'parsingError':
 		case 'networkError':
 			submit.disabled = false;
+			break;
+		case 'initialization':
+		case 'searching':
 			break;
 		default:
 			throw new Error(`Unknown application proccess state ${appProcessState}`);
@@ -176,9 +177,6 @@ const watch = (state, elements, i18nInstance) => {
 			case 'form.processState':
 				renderFormProcessState(elements, value);
 				break;
-			case 'form.link':
-			case 'form.validLinks':
-				break;
 			case 'app.feedback':
 				renderFeedback(elements, value, i18nInstance);
 				break;
@@ -187,6 +185,9 @@ const watch = (state, elements, i18nInstance) => {
 				break;
 			case 'data.posts':
 				renderPosts(elements, value, i18nInstance);
+				break;
+			case 'form.link':
+			case 'form.validLinks':
 				break;
 			default:
 				throw new Error(`Unknown state path ${path}`);
