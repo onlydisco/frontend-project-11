@@ -1,11 +1,12 @@
+import 'bootstrap';
 import onChange from 'on-change';
 
 const renderInitText = (elements, i18nInstance) => {
-	const { header, cta, input, label, example } = elements;
+	const { header, cta, label, submit, example } = elements;
 
 	header.textContent = i18nInstance.t('header');
 	cta.textContent = i18nInstance.t('cta');
-	input.textContent = i18nInstance.t('form.input');
+	submit.textContent = i18nInstance.t('form.input');
 	label.textContent = i18nInstance.t('form.label');
 	example.textContent = i18nInstance.t('example');
 };
@@ -155,7 +156,33 @@ const renderPosts = (elements, postsList, i18nInstance) => {
 		link.dataset.id = post.id;
 		link.textContent = post.title;
 
-		listItem.append(link);
+		const button = document.createElement('button');
+		button.setAttribute('type', 'button');
+		button.classList.add('btn', 'btn-outline-primary', 'btn-sm');
+		button.dataset.id = post.id;
+		button.dataset.bsToggle = 'modal';
+		button.dataset.bsTarget = '#modal';
+		button.textContent = i18nInstance.t('modal.open');
+
+		button.addEventListener('click', (event) => {
+			event.preventDefault();
+
+			const { bsTarget } = event.target.dataset;
+			const modal = document.querySelector(bsTarget);
+			modal.classList.add('show');
+			const modalTitle = document.querySelector('.modal-title');
+			const modalBody = document.querySelector('.modal-body');
+			const modalFullButton = document.querySelector('.modal-footer a');
+			const modalCloseButton = document.querySelector('.modal-footer button');
+
+			modalTitle.textContent = post.title;
+			modalBody.textContent = post.description;
+			modalFullButton.setAttribute('href', post.link);
+			modalFullButton.textContent = i18nInstance.t('modal.read');
+			modalCloseButton.textContent = i18nInstance.t('modal.close');
+		});
+
+		listItem.append(link, button);
 		list.prepend(listItem);
 
 		return list;

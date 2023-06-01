@@ -1,6 +1,6 @@
 const getFeed = (doc) => {
-	const docTitle = doc.querySelector('channel > title');
-	const docDescription = doc.querySelector('channel > description');
+	const docTitle = doc.querySelector('channel title');
+	const docDescription = doc.querySelector('channel description');
 
 	if (!docTitle || !docDescription) return null;
 
@@ -13,7 +13,7 @@ const getFeed = (doc) => {
 };
 
 const getPosts = (doc) => {
-	const items = doc.querySelectorAll('channel > item');
+	const items = doc.querySelectorAll('channel item');
 
 	if (!items) return null;
 

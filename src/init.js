@@ -33,6 +33,9 @@ const initialState = {
 		feeds: [],
 		posts: [],
 	},
+	ui: {
+		readPosts: [],
+	},
 };
 
 const init = () => {

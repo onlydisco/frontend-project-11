@@ -48,6 +48,7 @@
 		"webpack-dev-server": "^4.13.3"
 	},
 	"dependencies": {
+		"@popperjs/core": "^2.11.8",
 		"axios": "^1.4.0",
 		"bootstrap": "^5.2.3",
 		"i18next": "^22.5.0",

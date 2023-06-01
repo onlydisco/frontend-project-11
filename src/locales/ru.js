@@ -19,5 +19,10 @@ export default {
 		},
 		feeds: 'Фиды',
 		posts: 'Посты',
+		modal: {
+			open: 'Просмотр',
+			read: 'Читать полностью',
+			close: 'Закрыть',
+		},
 	},
 };
