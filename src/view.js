@@ -121,7 +121,7 @@ const renderFeeds = (elements, feedsList, i18nInstance) => {
 	feeds.append(card);
 };
 
-const renderPosts = (elements, postsList, i18nInstance) => {
+const renderPosts = (elements, postsList, i18nInstance, watchedState) => {
 	const { posts } = elements;
 	posts.replaceChildren();
 
@@ -153,8 +153,15 @@ const renderPosts = (elements, postsList, i18nInstance) => {
 		link.setAttribute('href', post.link);
 		link.setAttribute('target', '_blank');
 		link.setAttribute('rel', 'noopener noreferrer');
+		link.classList.add('fw-bold');
 		link.dataset.id = post.id;
 		link.textContent = post.title;
+
+		link.addEventListener('click', (event) => {
+			const { id } = event.target.dataset;
+			watchedState.ui.readPosts.push(id);
+			console.log('link.addEventListener -> watchedState:', watchedState);
+		});
 
 		const button = document.createElement('button');
 		button.setAttribute('type', 'button');
@@ -167,7 +174,11 @@ const renderPosts = (elements, postsList, i18nInstance) => {
 		button.addEventListener('click', (event) => {
 			event.preventDefault();
 
-			const { bsTarget } = event.target.dataset;
+			const { id, bsTarget } = event.target.dataset;
+
+			watchedState.ui.readPosts.push(id);
+			console.log('button.addEventListener -> watchedState:', watchedState.ui.readPosts);
+
 			const modal = document.querySelector(bsTarget);
 			modal.classList.add('show');
 			const modalTitle = document.querySelector('.modal-title');
@@ -193,6 +204,17 @@ const renderPosts = (elements, postsList, i18nInstance) => {
 	posts.append(card);
 };
 
+const renderReadPosts = (idList) => {
+	const links = document.querySelectorAll('.posts a');
+
+	links.forEach((link) => {
+		if (idList.includes(link.dataset.id)) {
+			link.classList.replace('fw-bold', 'fw-normal');
+			link.classList.add('link-secondary');
+		}
+	});
+};
+
 const watch = (state, elements, i18nInstance) => {
 	renderInitText(elements, i18nInstance);
 
@@ -211,7 +233,10 @@ const watch = (state, elements, i18nInstance) => {
 				renderFeeds(elements, value, i18nInstance);
 				break;
 			case 'data.posts':
-				renderPosts(elements, value, i18nInstance);
+				renderPosts(elements, value, i18nInstance, watchedState);
+				break;
+			case 'ui.readPosts':
+				renderReadPosts(value);
 				break;
 			case 'form.link':
 			case 'form.validLinks':
