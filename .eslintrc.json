@@ -31,7 +31,7 @@
         "error",
          {
           "ObjectExpression": {  "consistent": true, "multiline": true  },
-          "ObjectPattern": {  "consistent": true, "multiline": true  },
+          "ObjectPattern": {  "consistent": true, "multiline": true, "minProperties": 4  },
           "ImportDeclaration": "never",
           "ExportDeclaration": { "multiline":  true, "minProperties": 3 }
         }
