@@ -14,6 +14,8 @@
     ],
     "plugins": ["prettier"],    
     "rules": {
+      "indent": ["error", "space"],
+      "no-tabs": "error",
       "no-param-reassign": "off",
       "no-case-declarations": "off",
       "no-duplicate-imports": "error",
