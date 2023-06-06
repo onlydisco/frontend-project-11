@@ -1,7 +1,7 @@
 {
     "env": {
       "browser": true,
-      "node": true,      
+      "node": true    
     },
     "parserOptions": {
       "ecmaVersion": "latest",
@@ -10,7 +10,7 @@
     "extends": [
       "airbnb-base",
       "eslint:recommended",
-      "plugin:prettier/recommended",      
+      "plugin:prettier/recommended"      
     ],
     "plugins": ["prettier"],    
     "rules": {
