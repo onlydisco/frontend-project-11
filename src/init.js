@@ -10,143 +10,143 @@ import updatePosts from './updater.js';
 const yupSchema = (validLinks) => yup.string().required().url().notOneOf(validLinks);
 
 const proxy = (link) => {
-	const base = 'https://allorigins.hexlet.app';
-	const url = new URL('/get', base);
-	url.searchParams.append('disableCache', 'true');
-	url.searchParams.append('url', link);
+  const base = 'https://allorigins.hexlet.app';
+  const url = new URL('/get', base);
+  url.searchParams.append('disableCache', 'true');
+  url.searchParams.append('url', link);
 
-	return url;
+  return url;
 };
 
 const init = () => {
-	const elements = {
-		header: document.querySelector('h1'),
-		cta: document.querySelector('.lead'),
-		form: document.querySelector('.rss-form'),
-		input: document.getElementById('url-input'),
-		label: document.querySelector('.rss-form label'),
-		submit: document.querySelector('button[type="submit"]'),
-		example: document.getElementById('example'),
-		feedback: document.querySelector('.feedback'),
-		feeds: document.querySelector('.feeds'),
-		posts: document.querySelector('.posts'),
-	};
+  const elements = {
+    header: document.querySelector('h1'),
+    cta: document.querySelector('.lead'),
+    form: document.querySelector('.rss-form'),
+    input: document.getElementById('url-input'),
+    label: document.querySelector('.rss-form label'),
+    submit: document.querySelector('button[type="submit"]'),
+    example: document.getElementById('example'),
+    feedback: document.querySelector('.feedback'),
+    feeds: document.querySelector('.feeds'),
+    posts: document.querySelector('.posts'),
+  };
 
-	const initialState = {
-		app: {
-			processState: 'initialization',
-			language: 'ru',
-			feedback: null,
-		},
-		form: {
-			processState: 'filling',
-			validLinks: [],
-		},
-		data: {
-			feeds: [],
-			posts: [],
-		},
-		ui: {
-			readPosts: [],
-		},
-	};
+  const initialState = {
+    app: {
+      processState: 'initialization',
+      language: 'ru',
+      feedback: null,
+    },
+    form: {
+      processState: 'filling',
+      validLinks: [],
+    },
+    data: {
+      feeds: [],
+      posts: [],
+    },
+    ui: {
+      readPosts: [],
+    },
+  };
 
-	const i18nInstance = i18next.createInstance();
-	i18nInstance.init({
-		lng: initialState.app.language,
-		debug: false,
-		resources,
-	});
+  const i18nInstance = i18next.createInstance();
+  i18nInstance.init({
+    lng: initialState.app.language,
+    debug: false,
+    resources,
+  });
 
-	yup.setLocale({
-		mixed: {
-			notOneOf: 'feedback.errors.duplicate_url',
-		},
-		string: {
-			required: 'feedback.errors.empty_field',
-			url: 'feedback.errors.invalid_url',
-		},
-	});
+  yup.setLocale({
+    mixed: {
+      notOneOf: 'feedback.errors.duplicate_url',
+    },
+    string: {
+      required: 'feedback.errors.empty_field',
+      url: 'feedback.errors.invalid_url',
+    },
+  });
 
-	const watchedState = watch(initialState, elements, i18nInstance);
+  const watchedState = watch(initialState, elements, i18nInstance);
 
-	elements.input.addEventListener('change', (event) => {
-		watchedState.form.link = event.target.value;
-	});
+  elements.input.addEventListener('change', (event) => {
+    watchedState.form.link = event.target.value;
+  });
 
-	const getId = generateId();
+  const getId = generateId();
 
-	elements.form.addEventListener('submit', (event) => {
-		event.preventDefault();
+  elements.form.addEventListener('submit', (event) => {
+    event.preventDefault();
 
-		watchedState.form.processState = 'validating';
-		const schema = yupSchema(watchedState.form.validLinks);
+    watchedState.form.processState = 'validating';
+    const schema = yupSchema(watchedState.form.validLinks);
 
-		let proxyUrl;
+    let proxyUrl;
 
-		schema
-			.validate(watchedState.form.link)
-			.then((link) => {
-				watchedState.form.processState = 'valid';
-				watchedState.form.validLinks.push(link);
-				watchedState.app.processState = 'loading';
+    schema
+      .validate(watchedState.form.link)
+      .then((link) => {
+        watchedState.form.processState = 'valid';
+        watchedState.form.validLinks.push(link);
+        watchedState.app.processState = 'loading';
 
-				proxyUrl = proxy(link);
+        proxyUrl = proxy(link);
 
-				return axios.get(proxyUrl);
-			})
-			.then((response) => response.data.contents)
-			.then((content) => {
-				const parsedContent = parse(content);
-				const { feed, posts } = parsedContent;
+        return axios.get(proxyUrl);
+      })
+      .then((response) => response.data.contents)
+      .then((content) => {
+        const parsedContent = parse(content);
+        const { feed, posts } = parsedContent;
 
-				if (!feed || !posts) throw new Error(`Parsing Error`);
+        if (!feed || !posts) throw new Error(`Parsing Error`);
 
-				feed.id = getId();
-				watchedState.data.feeds.push(feed);
+        feed.id = getId();
+        watchedState.data.feeds.push(feed);
 
-				posts.map((post) => {
-					post.feedId = feed.id;
-					post.id = getId();
-					watchedState.data.posts.push(post);
+        posts.map((post) => {
+          post.feedId = feed.id;
+          post.id = getId();
+          watchedState.data.posts.push(post);
 
-					return watchedState.data.posts;
-				});
+          return watchedState.data.posts;
+        });
 
-				watchedState.app.processState = 'loaded';
-				watchedState.app.feedback = 'feedback.succes';
-				watchedState.form.processState = 'filling';
+        watchedState.app.processState = 'loaded';
+        watchedState.app.feedback = 'feedback.succes';
+        watchedState.form.processState = 'filling';
 
-				return feed.id;
-			})
-			.then((feedId) => {
-				watchedState.app.processState = 'searching';
-				setTimeout(() => updatePosts(watchedState, proxyUrl, feedId, getId), 5000);
-			})
-			.catch((error) => {
-				switch (error.name) {
-					case 'ValidationError':
-						const [errorCode] = error.errors;
-						watchedState.app.feedback = errorCode;
-						watchedState.form.processState = 'invalid';
-						break;
-					case 'Error':
-						if (error.message === 'Parsing Error') {
-							watchedState.app.processState = 'parsingError';
-							watchedState.app.feedback = 'feedback.errors.parsing_error';
-						}
-						break;
-					case 'AxiosError':
-						if (error.message === 'Network Error') {
-							watchedState.app.processState = 'networkError';
-							watchedState.app.feedback = 'feedback.errors.network_error';
-						}
-						break;
-					default:
-						throw new Error(`Unknown error name ${error.name}`);
-				}
-			});
-	});
+        return feed.id;
+      })
+      .then((feedId) => {
+        watchedState.app.processState = 'searching';
+        setTimeout(() => updatePosts(watchedState, proxyUrl, feedId, getId), 5000);
+      })
+      .catch((error) => {
+        switch (error.name) {
+          case 'ValidationError':
+            const [errorCode] = error.errors;
+            watchedState.app.feedback = errorCode;
+            watchedState.form.processState = 'invalid';
+            break;
+          case 'Error':
+            if (error.message === 'Parsing Error') {
+              watchedState.app.processState = 'parsingError';
+              watchedState.app.feedback = 'feedback.errors.parsing_error';
+            }
+            break;
+          case 'AxiosError':
+            if (error.message === 'Network Error') {
+              watchedState.app.processState = 'networkError';
+              watchedState.app.feedback = 'feedback.errors.network_error';
+            }
+            break;
+          default:
+            throw new Error(`Unknown error name ${error.name}`);
+        }
+      });
+  });
 };
 
 export default init;

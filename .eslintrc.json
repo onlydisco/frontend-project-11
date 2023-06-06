@@ -14,8 +14,13 @@
     ],
     "plugins": ["prettier"],    
     "rules": {
-      "indent": ["error", "space"],
-      "no-tabs": "error",
+      "prettier/prettier": [ "error",
+        {
+          "useTabs": false
+        } 
+      ],
+      "indent": ["error", 2, { "SwitchCase": 1 }],
+      "no-tabs": ["error"],      
       "no-param-reassign": "off",
       "no-case-declarations": "off",
       "no-duplicate-imports": "error",
