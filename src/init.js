@@ -124,10 +124,11 @@ const init = () => {
         setTimeout(() => updatePosts(watchedState, proxyUrl, feedId, getId), 5000);
       })
       .catch((error) => {
-        const [errorCode] = error.errors;
+        let errorCode;
 
         switch (error.name) {
           case 'ValidationError':
+            [errorCode] = error.errors;
             watchedState.app.feedback = errorCode;
             watchedState.form.processState = 'invalid';
             break;
