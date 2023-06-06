@@ -10,11 +10,11 @@ export default {
 		feedback: {
 			succes: 'RSS успешно загружен',
 			errors: {
-				empty_field: 'Обязательное поле',
-				invalid_url: 'Некоректный URL',
-				duplicate_url: 'Такой URL уже существует',
-				parsing_error: 'Ошибка парсинга',
-				network_error: 'Ошиба сети',
+				empty_field: 'Не должно быть пустым',
+				invalid_url: 'Ссылка должна быть валидным URL',
+				duplicate_url: 'RSS уже существует',
+				parsing_error: 'Ресурс не содержит валидный RSS',
+				network_error: 'Ошибка сети',
 			},
 		},
 		feeds: 'Фиды',

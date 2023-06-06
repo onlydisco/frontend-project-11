@@ -18,26 +18,6 @@ const proxy = (link) => {
 	return url;
 };
 
-const initialState = {
-	app: {
-		processState: 'initialization', // initialization, loading, loaded, parsingError, networkError, searching
-		language: 'ru',
-		feedback: null,
-	},
-	form: {
-		processState: 'filling', // filling, validating, valid, invalid
-		link: null,
-		validLinks: [],
-	},
-	data: {
-		feeds: [],
-		posts: [],
-	},
-	ui: {
-		readPosts: [],
-	},
-};
-
 const init = () => {
 	const elements = {
 		header: document.querySelector('h1'),
@@ -50,6 +30,25 @@ const init = () => {
 		feedback: document.querySelector('.feedback'),
 		feeds: document.querySelector('.feeds'),
 		posts: document.querySelector('.posts'),
+	};
+
+	const initialState = {
+		app: {
+			processState: 'initialization',
+			language: 'ru',
+			feedback: null,
+		},
+		form: {
+			processState: 'filling',
+			validLinks: [],
+		},
+		data: {
+			feeds: [],
+			posts: [],
+		},
+		ui: {
+			readPosts: [],
+		},
 	};
 
 	const i18nInstance = i18next.createInstance();
