@@ -4,7 +4,7 @@
 
 # 🚀 Welcome to your new awesome project!
 
-[RSS Generator](https://frontend-project-11-gray.vercel.app/)
+[RSS Generator](https://rss-aggregator-onlydisco.vercel.app)
 
 This project has been created using **webpack-cli**, you can now run
 
