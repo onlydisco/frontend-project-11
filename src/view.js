@@ -178,11 +178,11 @@ const renderPosts = (elements, postsList, i18nInstance, watchedState) => {
 			watchedState.ui.readPosts.push(id);
 
 			const modal = document.querySelector(bsTarget);
-			modal.classList.add('show');
-			const modalTitle = document.querySelector('.modal-title');
-			const modalBody = document.querySelector('.modal-body');
-			const modalFullButton = document.querySelector('.modal-footer a');
-			const modalCloseButton = document.querySelector('.modal-footer button');
+			// modal.classList.add('show');
+			const modalTitle = modal.querySelector('.modal-title');
+			const modalBody = modal.querySelector('.modal-body');
+			const modalFullButton = modal.querySelector('.modal-footer a');
+			const modalCloseButton = modal.querySelector('.modal-footer button');
 
 			modalTitle.textContent = post.title;
 			modalBody.textContent = post.description;
