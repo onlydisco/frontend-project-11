@@ -117,18 +117,13 @@ const init = () => {
 				watchedState.app.feedback = 'feedback.succes';
 				watchedState.form.processState = 'filling';
 
-				console.log(watchedState);
-
 				return feed.id;
 			})
 			.then((feedId) => {
 				watchedState.app.processState = 'searching';
-				console.log('ping');
 				setTimeout(() => updatePosts(watchedState, proxyUrl, feedId, getId), 5000);
 			})
 			.catch((error) => {
-				console.log(error);
-
 				switch (error.name) {
 					case 'ValidationError':
 						const [errorCode] = error.errors;

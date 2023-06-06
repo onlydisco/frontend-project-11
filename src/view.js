@@ -160,7 +160,6 @@ const renderPosts = (elements, postsList, i18nInstance, watchedState) => {
 		link.addEventListener('click', (event) => {
 			const { id } = event.target.dataset;
 			watchedState.ui.readPosts.push(id);
-			console.log('link.addEventListener -> watchedState:', watchedState);
 		});
 
 		const button = document.createElement('button');
@@ -177,7 +176,6 @@ const renderPosts = (elements, postsList, i18nInstance, watchedState) => {
 			const { id, bsTarget } = event.target.dataset;
 
 			watchedState.ui.readPosts.push(id);
-			console.log('button.addEventListener -> watchedState:', watchedState.ui.readPosts);
 
 			const modal = document.querySelector(bsTarget);
 			modal.classList.add('show');
