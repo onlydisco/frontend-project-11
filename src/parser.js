@@ -28,7 +28,12 @@ const getPosts = (doc) => {
     const guid = itemGuid.textContent;
     const link = itemLink.textContent;
 
-    const post = { title, description, link, guid };
+    const post = {
+      title,
+      description,
+      link,
+      guid,
+    };
 
     return post;
   });

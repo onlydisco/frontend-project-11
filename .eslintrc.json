@@ -16,8 +16,9 @@
     "rules": {
       "prettier/prettier": [ "error",
         {
-          "useTabs": false
-        } 
+          "useTabs": false,
+          "trailingComma": "all"          
+        }
       ],
       "indent": ["error", 2, { "SwitchCase": 1 }],
       "no-tabs": ["error"],      
@@ -25,6 +26,15 @@
       "no-case-declarations": "off",
       "no-duplicate-imports": "error",
       "no-console": "off",
-      "import/extensions": ["error", "ignorePackages", { "js": "always" }]
+      "import/extensions": ["error", "ignorePackages", { "js": "always" }],
+      "object-curly-newline": [
+        "error",
+         {
+          "ObjectExpression": {  "consistent": true, "multiline": true  },
+          "ObjectPattern": {  "consistent": true, "multiline": true  },
+          "ImportDeclaration": "never",
+          "ExportDeclaration": { "multiline":  true, "minProperties": 3 }
+        }
+      ]
     }
   }

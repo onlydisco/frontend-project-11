@@ -8,7 +8,7 @@ const updatePosts = (watchedState, proxyUrl, feedId, getId) => {
     .then((content) => {
       const { posts } = parse(content);
 
-      if (!posts) throw new Error(`Parsing Error`);
+      if (!posts) throw new Error('Parsing Error');
 
       return posts;
     })

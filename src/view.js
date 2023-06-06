@@ -146,7 +146,7 @@ const renderPosts = (elements, postsList, i18nInstance, watchedState) => {
       'justify-content-between',
       'align-items-start',
       'border-0',
-      'border-end-0'
+      'border-end-0',
     );
 
     const link = document.createElement('a');

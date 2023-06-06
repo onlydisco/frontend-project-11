@@ -100,7 +100,7 @@ const init = () => {
         const parsedContent = parse(content);
         const { feed, posts } = parsedContent;
 
-        if (!feed || !posts) throw new Error(`Parsing Error`);
+        if (!feed || !posts) throw new Error('Parsing Error');
 
         feed.id = getId();
         watchedState.data.feeds.push(feed);
@@ -124,9 +124,10 @@ const init = () => {
         setTimeout(() => updatePosts(watchedState, proxyUrl, feedId, getId), 5000);
       })
       .catch((error) => {
+        const [errorCode] = error.errors;
+
         switch (error.name) {
           case 'ValidationError':
-            const [errorCode] = error.errors;
             watchedState.app.feedback = errorCode;
             watchedState.form.processState = 'invalid';
             break;
