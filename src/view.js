@@ -15,9 +15,6 @@ const renderAppProcessState = (elements, appProcessState) => {
   const { form, input, submit } = elements;
 
   switch (appProcessState) {
-    case 'initialization':
-    case 'filling':
-      break;
     case 'loading':
       submit.disabled = true;
       break;
@@ -32,6 +29,27 @@ const renderAppProcessState = (elements, appProcessState) => {
       break;
     default:
       throw new Error(`Unknown application proccess state ${appProcessState}`);
+  }
+};
+
+const renderFeedback = (elements, value, i18nInstance) => {
+  const { feedback } = elements;
+
+  feedback.textContent = i18nInstance.t(value);
+
+  switch (value) {
+    case 'feedback.succes':
+      feedback.classList.replace('text-danger', 'text-success');
+      break;
+    case 'feedback.errors.empty_field':
+    case 'feedback.errors.invalid_url':
+    case 'feedback.errors.duplicate_url':
+    case 'feedback.errors.parsing_error':
+    case 'feedback.errors.network_error':
+      feedback.classList.replace('text-success', 'text-danger');
+      break;
+    default:
+      throw new Error(`Unknown feedback value ${value}`);
   }
 };
 
@@ -57,27 +75,6 @@ const renderFormProcessState = (elements, formProcessState) => {
       break;
     default:
       throw new Error(`Unknown form process state ${formProcessState}`);
-  }
-};
-
-const renderFeedback = (elements, value, i18nInstance) => {
-  const { feedback } = elements;
-
-  feedback.textContent = i18nInstance.t(value);
-
-  switch (value) {
-    case 'feedback.succes':
-      feedback.classList.replace('text-danger', 'text-success');
-      break;
-    case 'feedback.errors.empty_field':
-    case 'feedback.errors.invalid_url':
-    case 'feedback.errors.duplicate_url':
-    case 'feedback.errors.parsing_error':
-    case 'feedback.errors.network_error':
-      feedback.classList.replace('text-success', 'text-danger');
-      break;
-    default:
-      throw new Error(`Unknown feedback value ${value}`);
   }
 };
 
@@ -220,11 +217,11 @@ const watch = (state, elements, i18nInstance) => {
       case 'app.processState':
         renderAppProcessState(elements, value);
         break;
-      case 'form.processState':
-        renderFormProcessState(elements, value);
-        break;
       case 'app.feedback':
         renderFeedback(elements, value, i18nInstance);
+        break;
+      case 'form.processState':
+        renderFormProcessState(elements, value);
         break;
       case 'data.feeds':
         renderFeeds(elements, value, i18nInstance);
@@ -234,9 +231,6 @@ const watch = (state, elements, i18nInstance) => {
         break;
       case 'ui.readPosts':
         renderReadPosts(value);
-        break;
-      case 'form.link':
-      case 'form.validLinks':
         break;
       default:
         throw new Error(`Unknown state path ${path}`);

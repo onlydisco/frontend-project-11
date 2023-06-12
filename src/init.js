@@ -66,7 +66,7 @@ const app = (i18nInstance) => {
 
   const initialState = {
     app: {
-      processState: 'initialization',
+      processState: null,
       feedback: null,
     },
     form: {
