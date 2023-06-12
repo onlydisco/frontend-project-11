@@ -1,10 +1,11 @@
 import * as yup from 'yup';
 import i18next from 'i18next';
 import axios from 'axios';
+import _ from 'lodash';
+// import generateId from './idgenerator.js';
 import resources from './locales/index.js';
 import watch from './view.js';
 import parse from './parser.js';
-import generateId from './idgenerator.js';
 import updatePosts from './updater.js';
 
 const yupSchema = (validLinks) => yup.string().required().url().notOneOf(validLinks);
@@ -74,7 +75,7 @@ const init = () => {
     watchedState.form.link = event.target.value;
   });
 
-  const getId = generateId();
+  // const getId = _.uniqueId();
 
   elements.form.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -102,12 +103,12 @@ const init = () => {
 
         if (!feed || !posts) throw new Error('Parsing Error');
 
-        feed.id = getId();
+        feed.id = _.uniqueId();
         watchedState.data.feeds.push(feed);
 
         posts.map((post) => {
           post.feedId = feed.id;
-          post.id = getId();
+          post.id = _.uniqueId();
           watchedState.data.posts.push(post);
 
           return watchedState.data.posts;
@@ -117,13 +118,17 @@ const init = () => {
         watchedState.app.feedback = 'feedback.succes';
         watchedState.form.processState = 'filling';
 
+        console.log(watchedState);
+
         return feed.id;
       })
       .then((feedId) => {
         watchedState.app.processState = 'searching';
-        setTimeout(() => updatePosts(watchedState, proxyUrl, feedId, getId), 5000);
+        setTimeout(() => updatePosts(watchedState, proxyUrl, feedId), 5000);
       })
       .catch((error) => {
+        console.log(error);
+
         let errorCode;
 
         switch (error.name) {

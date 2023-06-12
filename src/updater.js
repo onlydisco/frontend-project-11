@@ -1,7 +1,8 @@
 import axios from 'axios';
+import _ from 'lodash';
 import parse from './parser.js';
 
-const updatePosts = (watchedState, proxyUrl, feedId, getId) => {
+const updatePosts = (watchedState, proxyUrl, feedId) => {
   axios
     .get(proxyUrl)
     .then((response) => response.data.contents)
@@ -21,7 +22,7 @@ const updatePosts = (watchedState, proxyUrl, feedId, getId) => {
 
       newPosts.map((post) => {
         post.feedId = feedId;
-        post.id = getId();
+        post.id = _.uniqueId();
         watchedState.data.posts.push(post);
 
         return watchedState.data.posts;
@@ -29,7 +30,7 @@ const updatePosts = (watchedState, proxyUrl, feedId, getId) => {
     })
     .catch((error) => console.log(error))
     .finally(() => {
-      setTimeout(() => updatePosts(watchedState, proxyUrl, feedId, getId), 5000);
+      setTimeout(() => updatePosts(watchedState, proxyUrl, feedId), 5000);
     });
 };
 
