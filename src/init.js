@@ -2,7 +2,6 @@ import * as yup from 'yup';
 import i18next from 'i18next';
 import axios from 'axios';
 import _ from 'lodash';
-// import generateId from './idgenerator.js';
 import resources from './locales/index.js';
 import watch from './view.js';
 import parse from './parser.js';
@@ -74,8 +73,6 @@ const init = () => {
   elements.input.addEventListener('change', (event) => {
     watchedState.form.link = event.target.value;
   });
-
-  // const getId = _.uniqueId();
 
   elements.form.addEventListener('submit', (event) => {
     event.preventDefault();
