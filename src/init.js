@@ -49,7 +49,7 @@ const updatePosts = (watchedState, proxyUrl, feedId) => {
     });
 };
 
-const init = () => {
+const app = (i18nInstance) => {
   const elements = {
     header: document.querySelector('h1'),
     cta: document.querySelector('.lead'),
@@ -66,7 +66,6 @@ const init = () => {
   const initialState = {
     app: {
       processState: 'initialization',
-      language: 'ru',
       feedback: null,
     },
     form: {
@@ -82,13 +81,6 @@ const init = () => {
     },
   };
 
-  const i18nInstance = i18next.createInstance();
-  i18nInstance.init({
-    lng: initialState.app.language,
-    debug: false,
-    resources,
-  });
-
   yup.setLocale({
     mixed: {
       notOneOf: 'feedback.errors.duplicate_url',
@@ -101,12 +93,15 @@ const init = () => {
 
   const watchedState = watch(initialState, elements, i18nInstance);
 
-  elements.input.addEventListener('change', (event) => {
-    watchedState.form.link = event.target.value;
-  });
+  // elements.input.addEventListener('change', (event) => {
+  //   watchedState.form.link = event.target.value;
+  // });
 
   elements.form.addEventListener('submit', (event) => {
     event.preventDefault();
+
+    const formData = new FormData(event.target);
+    const currentUrl = formData.get('url');
 
     watchedState.form.processState = 'validating';
     const schema = yupSchema(watchedState.form.validLinks);
@@ -114,7 +109,7 @@ const init = () => {
     let proxyUrl;
 
     schema
-      .validate(watchedState.form.link)
+      .validate(currentUrl)
       .then((link) => {
         watchedState.form.processState = 'valid';
         watchedState.form.validLinks.push(link);
@@ -182,6 +177,21 @@ const init = () => {
         }
       });
   });
+};
+
+const init = () => {
+  const i18nInstance = i18next.createInstance();
+
+  i18nInstance
+    .init({
+      lng: 'ru',
+      debug: false,
+      resources,
+    })
+    .then(() => app(i18nInstance))
+    .catch((error) => {
+      throw new Error(`App initialization error: ${error}`);
+    });
 };
 
 export default init;
