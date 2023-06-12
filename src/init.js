@@ -20,7 +20,7 @@ const proxy = (link) => {
 const updatePosts = (watchedState) => {
   const update = () => {
     const promises = watchedState.data.feeds.map(({ url, id }) =>
-      axios
+      axios /// eslint-disable-line
         .get(proxy(url))
         .then((response) => {
           const { posts } = parse(response.data.contents);
@@ -42,7 +42,7 @@ const updatePosts = (watchedState) => {
           });
         })
         .catch((error) => console.log(error)),
-    );
+    ); // eslint-disable-line
 
     Promise.all(promises).finally(() => setTimeout(() => updatePosts(watchedState), 5000));
   };
