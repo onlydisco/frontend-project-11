@@ -5,7 +5,6 @@ import _ from 'lodash';
 import resources from './locales/index.js';
 import watch from './view.js';
 import parse from './parser.js';
-import updatePosts from './updater.js';
 
 const yupSchema = (validLinks) => yup.string().required().url().notOneOf(validLinks);
 
@@ -16,6 +15,38 @@ const proxy = (link) => {
   url.searchParams.append('url', link);
 
   return url;
+};
+
+const updatePosts = (watchedState, proxyUrl, feedId) => {
+  axios
+    .get(proxyUrl)
+    .then((response) => response.data.contents)
+    .then((content) => {
+      const { posts } = parse(content);
+
+      if (!posts) throw new Error('Parsing Error');
+
+      return posts;
+    })
+    .then((lastPosts) => {
+      const oldPosts = watchedState.data.posts.filter((post) => post.feedId === feedId);
+      const oldGuids = oldPosts.map((post) => post.guid);
+      const newPosts = lastPosts.filter((post) => !oldGuids.includes(post.guid));
+
+      if (newPosts.length === 0) return;
+
+      newPosts.map((post) => {
+        post.feedId = feedId;
+        post.id = _.uniqueId();
+        watchedState.data.posts.push(post);
+
+        return watchedState.data.posts;
+      });
+    })
+    .catch((error) => console.log(error))
+    .finally(() => {
+      setTimeout(() => updatePosts(watchedState, proxyUrl, feedId), 5000);
+    });
 };
 
 const init = () => {
