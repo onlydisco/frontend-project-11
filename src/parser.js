@@ -48,6 +48,8 @@ const parse = (content) => {
   const feed = getFeed(doc);
   const posts = getPosts(doc);
 
+  if (!feed || !posts) throw new Error('Parsing Error');
+
   const data = { feed, posts };
 
   return data;

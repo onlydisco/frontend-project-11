@@ -15,6 +15,9 @@ const renderAppProcessState = (elements, appProcessState) => {
   const { form, input, submit } = elements;
 
   switch (appProcessState) {
+    case 'initialization':
+    case 'filling':
+      break;
     case 'loading':
       submit.disabled = true;
       break;
@@ -26,9 +29,6 @@ const renderAppProcessState = (elements, appProcessState) => {
     case 'parsingError':
     case 'networkError':
       submit.disabled = false;
-      break;
-    case 'initialization':
-    case 'searching':
       break;
     default:
       throw new Error(`Unknown application proccess state ${appProcessState}`);

@@ -17,36 +17,37 @@ const proxy = (link) => {
   return url;
 };
 
-const updatePosts = (watchedState, proxyUrl, feedId) => {
-  axios
-    .get(proxyUrl)
-    .then((response) => response.data.contents)
-    .then((content) => {
-      const { posts } = parse(content);
+const updatePosts = (watchedState) => {
+  const update = () => {
+    const promises = watchedState.data.feeds.map(({ url, id }) =>
+      axios
+        .get(proxy(url))
+        .then((response) => {
+          const { posts } = parse(response.data.contents);
 
-      if (!posts) throw new Error('Parsing Error');
+          if (!posts) throw new Error('Parsing Error');
 
-      return posts;
-    })
-    .then((lastPosts) => {
-      const oldPosts = watchedState.data.posts.filter((post) => post.feedId === feedId);
-      const oldGuids = oldPosts.map((post) => post.guid);
-      const newPosts = lastPosts.filter((post) => !oldGuids.includes(post.guid));
+          const oldPosts = watchedState.data.posts.filter((post) => post.feedId === id);
+          const oldGuids = oldPosts.map((post) => post.guid);
+          const newPosts = posts.filter((post) => !oldGuids.includes(post.guid));
 
-      if (newPosts.length === 0) return;
+          if (newPosts.length === 0) return;
 
-      newPosts.map((post) => {
-        post.feedId = feedId;
-        post.id = _.uniqueId();
-        watchedState.data.posts.push(post);
+          newPosts.map((post) => {
+            post.feedId = id;
+            post.id = _.uniqueId();
+            watchedState.data.posts.push(post);
 
-        return watchedState.data.posts;
-      });
-    })
-    .catch((error) => console.log(error))
-    .finally(() => {
-      setTimeout(() => updatePosts(watchedState, proxyUrl, feedId), 5000);
-    });
+            return watchedState.data.posts;
+          });
+        })
+        .catch((error) => console.log(error)),
+    );
+
+    Promise.all(promises).finally(() => setTimeout(() => updatePosts(watchedState), 5000));
+  };
+
+  update();
 };
 
 const app = (i18nInstance) => {
@@ -70,7 +71,6 @@ const app = (i18nInstance) => {
     },
     form: {
       processState: 'filling',
-      validLinks: [],
     },
     data: {
       feeds: [],
@@ -93,10 +93,6 @@ const app = (i18nInstance) => {
 
   const watchedState = watch(initialState, elements, i18nInstance);
 
-  // elements.input.addEventListener('change', (event) => {
-  //   watchedState.form.link = event.target.value;
-  // });
-
   elements.form.addEventListener('submit', (event) => {
     event.preventDefault();
 
@@ -104,7 +100,9 @@ const app = (i18nInstance) => {
     const currentUrl = formData.get('url');
 
     watchedState.form.processState = 'validating';
-    const schema = yupSchema(watchedState.form.validLinks);
+
+    const validLinks = watchedState.data.feeds.map((feed) => feed.url);
+    const schema = yupSchema(validLinks);
 
     let proxyUrl;
 
@@ -112,21 +110,18 @@ const app = (i18nInstance) => {
       .validate(currentUrl)
       .then((link) => {
         watchedState.form.processState = 'valid';
-        watchedState.form.validLinks.push(link);
         watchedState.app.processState = 'loading';
 
         proxyUrl = proxy(link);
 
         return axios.get(proxyUrl);
       })
-      .then((response) => response.data.contents)
-      .then((content) => {
-        const parsedContent = parse(content);
+      .then((response) => {
+        const parsedContent = parse(response.data.contents);
         const { feed, posts } = parsedContent;
 
-        if (!feed || !posts) throw new Error('Parsing Error');
-
         feed.id = _.uniqueId();
+        feed.url = currentUrl;
         watchedState.data.feeds.push(feed);
 
         posts.map((post) => {
@@ -140,14 +135,6 @@ const app = (i18nInstance) => {
         watchedState.app.processState = 'loaded';
         watchedState.app.feedback = 'feedback.succes';
         watchedState.form.processState = 'filling';
-
-        console.log(watchedState);
-
-        return feed.id;
-      })
-      .then((feedId) => {
-        watchedState.app.processState = 'searching';
-        setTimeout(() => updatePosts(watchedState, proxyUrl, feedId), 5000);
       })
       .catch((error) => {
         console.log(error);
@@ -177,6 +164,8 @@ const app = (i18nInstance) => {
         }
       });
   });
+
+  setTimeout(updatePosts(watchedState), 5000);
 };
 
 const init = () => {
