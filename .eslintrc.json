@@ -10,16 +10,9 @@
     "extends": [
       "airbnb-base",
       "eslint:recommended",
-      "plugin:prettier/recommended"      
-    ],
-    "plugins": ["prettier"],    
+      "prettier"      
+    ],        
     "rules": {
-      "prettier/prettier": [ "error",
-        {
-          "useTabs": false,
-          "trailingComma": "all"          
-        }
-      ],
       "indent": ["error", 2, { "SwitchCase": 1 }],
       "no-tabs": ["error"],      
       "no-param-reassign": "off",
