@@ -2,7 +2,7 @@ import 'bootstrap';
 import onChange from 'on-change';
 
 const renderInitText = (elements, i18nInstance) => {
-  const { header, cta, label, submit, example } = elements; // eslint-disable-line
+  const { header, cta, label, submit, example } = elements;
 
   header.textContent = i18nInstance.t('header');
   cta.textContent = i18nInstance.t('cta');
@@ -143,7 +143,7 @@ const renderPosts = (elements, postsList, i18nInstance, watchedState) => {
       'justify-content-between',
       'align-items-start',
       'border-0',
-      'border-end-0',
+      'border-end-0'
     );
 
     const link = document.createElement('a');
