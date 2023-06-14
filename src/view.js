@@ -2,7 +2,9 @@ import 'bootstrap';
 import onChange from 'on-change';
 
 const renderInitText = (elements, i18nInstance) => {
-  const { header, cta, label, submit, example } = elements;
+  const {
+    header, cta, label, submit, example,
+  } = elements;
 
   header.textContent = i18nInstance.t('header');
   cta.textContent = i18nInstance.t('cta');

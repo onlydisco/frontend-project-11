@@ -19,30 +19,32 @@ const proxy = (link) => {
 
 const updatePosts = (watchedState) => {
   const update = () => {
-    const promises = watchedState.data.feeds.map(({ url, id }) =>
-      axios
-        .get(proxy(url))
-        .then((response) => {
-          const { posts } = parse(response.data.contents);
+    const promises = watchedState.data.feeds.map(({ url, id }) => axios
+      .get(proxy(url))
+      .then((response) => {
+        const { posts } = parse(response.data.contents);
 
-          if (!posts) throw new Error('Parsing Error');
+        if (!posts) throw new Error('Parsing Error');
 
-          const oldPosts = watchedState.data.posts.filter((post) => post.feedId === id);
-          const oldGuids = oldPosts.map((post) => post.guid);
-          const newPosts = posts.filter((post) => !oldGuids.includes(post.guid));
+        const oldPosts = watchedState.data.posts.filter(
+          (post) => post.feedId === id,
+        );
+        const oldGuids = oldPosts.map((post) => post.guid);
+        const newPosts = posts.filter(
+          (post) => !oldGuids.includes(post.guid),
+        );
 
-          if (newPosts.length === 0) return;
+        if (newPosts.length === 0) return;
 
-          newPosts.map((post) => {
-            post.feedId = id;
-            post.id = _.uniqueId();
-            watchedState.data.posts.push(post);
+        newPosts.map((post) => {
+          post.feedId = id;
+          post.id = _.uniqueId();
+          watchedState.data.posts.push(post);
 
-            return watchedState.data.posts;
-          });
-        })
-        .catch((error) => console.log(error)),
-    );
+          return watchedState.data.posts;
+        });
+      })
+      .catch((error) => console.log(error)));
 
     Promise.all(promises).finally(() => setTimeout(() => updatePosts(watchedState), 5000));
   };
