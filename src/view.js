@@ -121,7 +121,7 @@ const renderFeeds = (elements, feedsList, i18nInstance) => {
   feeds.append(card);
 };
 
-const renderPosts = (elements, postsList, i18nInstance, watchedState) => {
+const renderPosts = (elements, postsList, i18nInstance) => {
   const { posts } = elements;
   posts.replaceChildren();
 
@@ -157,11 +157,6 @@ const renderPosts = (elements, postsList, i18nInstance, watchedState) => {
     link.dataset.id = post.id;
     link.textContent = post.title;
 
-    link.addEventListener('click', (event) => {
-      const { id } = event.target.dataset;
-      watchedState.ui.readPosts.push(id);
-    });
-
     const button = document.createElement('button');
     button.setAttribute('type', 'button');
     button.classList.add('btn', 'btn-outline-primary', 'btn-sm');
@@ -169,26 +164,6 @@ const renderPosts = (elements, postsList, i18nInstance, watchedState) => {
     button.dataset.bsToggle = 'modal';
     button.dataset.bsTarget = '#modal';
     button.textContent = i18nInstance.t('modal.open');
-
-    button.addEventListener('click', (event) => {
-      event.preventDefault();
-
-      const { id, bsTarget } = event.target.dataset;
-
-      watchedState.ui.readPosts.push(id);
-
-      const modal = document.querySelector(bsTarget);
-      const modalTitle = modal.querySelector('.modal-title');
-      const modalBody = modal.querySelector('.modal-body');
-      const modalFullButton = modal.querySelector('.modal-footer a');
-      const modalCloseButton = modal.querySelector('.modal-footer button');
-
-      modalTitle.textContent = post.title;
-      modalBody.textContent = post.description;
-      modalFullButton.setAttribute('href', post.link);
-      modalFullButton.textContent = i18nInstance.t('modal.read');
-      modalCloseButton.textContent = i18nInstance.t('modal.close');
-    });
 
     listItem.append(link, button);
     list.prepend(listItem);
@@ -199,6 +174,24 @@ const renderPosts = (elements, postsList, i18nInstance, watchedState) => {
   cardBody.append(cardTitle);
   card.append(cardBody, list);
   posts.append(card);
+};
+
+const renderModal = (elements, currentPostId, i18nInstance, watchedState) => {
+  const { modal } = elements;
+  const modalTitle = modal.querySelector('.modal-title');
+  const modalBody = modal.querySelector('.modal-body');
+  const modalFullButton = modal.querySelector('.modal-footer a');
+  const modalCloseButton = modal.querySelector('.modal-footer button');
+
+  const currentPost = watchedState.data.posts.find(
+    (post) => post.id === currentPostId,
+  );
+
+  modalTitle.textContent = currentPost.title;
+  modalBody.textContent = currentPost.description;
+  modalFullButton.setAttribute('href', currentPost.link);
+  modalFullButton.textContent = i18nInstance.t('modal.read');
+  modalCloseButton.textContent = i18nInstance.t('modal.close');
 };
 
 const renderReadPosts = (idList) => {
@@ -230,7 +223,10 @@ const watch = (state, elements, i18nInstance) => {
         renderFeeds(elements, value, i18nInstance);
         break;
       case 'data.posts':
-        renderPosts(elements, value, i18nInstance, watchedState);
+        renderPosts(elements, value, i18nInstance);
+        break;
+      case 'ui.currentPost':
+        renderModal(elements, value, i18nInstance, watchedState);
         break;
       case 'ui.readPosts':
         renderReadPosts(value);

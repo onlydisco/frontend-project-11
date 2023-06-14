@@ -17,39 +17,78 @@ const proxy = (link) => {
   return url;
 };
 
+const loadFeed = (currentUrl, watchedState) => {
+  const proxyUrl = proxy(currentUrl);
+
+  return axios
+    .get(proxyUrl)
+    .then((response) => {
+      const parsedContent = parse(response.data.contents);
+      const { feed, posts } = parsedContent;
+
+      feed.id = _.uniqueId();
+      feed.url = currentUrl;
+      watchedState.data.feeds.push(feed);
+
+      posts.map((post) => {
+        post.feedId = feed.id;
+        post.id = _.uniqueId();
+        watchedState.data.posts.push(post);
+
+        return watchedState.data.posts;
+      });
+
+      watchedState.app.processState = 'loaded';
+      watchedState.app.feedback = 'feedback.succes';
+      watchedState.form.processState = 'filling';
+    })
+    .catch((error) => {
+      console.log(error);
+
+      switch (error.name) {
+        case 'AxiosError':
+          if (error.message === 'Network Error') {
+            watchedState.app.processState = 'networkError';
+            watchedState.app.feedback = 'feedback.errors.network_error';
+          }
+          break;
+        case 'Error':
+          if (error.message === 'Parsing Error') {
+            watchedState.app.processState = 'parsingError';
+            watchedState.app.feedback = 'feedback.errors.parsing_error';
+          }
+          break;
+        default:
+          throw new Error(`Unknown error name ${error.name}`);
+      }
+    });
+};
+
 const updatePosts = (watchedState) => {
-  const update = () => {
-    const promises = watchedState.data.feeds.map(({ url, id }) => axios
-      .get(proxy(url))
-      .then((response) => {
-        const { posts } = parse(response.data.contents);
+  const promises = watchedState.data.feeds.map(({ url, id }) => axios
+    .get(proxy(url))
+    .then((response) => {
+      const { posts } = parse(response.data.contents);
 
-        if (!posts) throw new Error('Parsing Error');
+      const oldPosts = watchedState.data.posts.filter(
+        (post) => post.feedId === id,
+      );
+      const oldLinks = oldPosts.map((post) => post.link);
+      const newPosts = posts.filter((post) => !oldLinks.includes(post.link));
 
-        const oldPosts = watchedState.data.posts.filter(
-          (post) => post.feedId === id,
-        );
-        const oldGuids = oldPosts.map((post) => post.guid);
-        const newPosts = posts.filter(
-          (post) => !oldGuids.includes(post.guid),
-        );
+      if (newPosts.length === 0) return;
 
-        if (newPosts.length === 0) return;
+      newPosts.map((post) => {
+        post.feedId = id;
+        post.id = _.uniqueId();
+        watchedState.data.posts.push(post);
 
-        newPosts.map((post) => {
-          post.feedId = id;
-          post.id = _.uniqueId();
-          watchedState.data.posts.push(post);
+        return watchedState.data.posts;
+      });
+    })
+    .catch((error) => console.log(error)));
 
-          return watchedState.data.posts;
-        });
-      })
-      .catch((error) => console.log(error)));
-
-    Promise.all(promises).finally(() => setTimeout(() => updatePosts(watchedState), 5000));
-  };
-
-  update();
+  Promise.all(promises).finally(() => setTimeout(() => updatePosts(watchedState), 5000));
 };
 
 const app = (i18nInstance) => {
@@ -64,11 +103,12 @@ const app = (i18nInstance) => {
     feedback: document.querySelector('.feedback'),
     feeds: document.querySelector('.feeds'),
     posts: document.querySelector('.posts'),
+    modal: document.getElementById('modal'),
   };
 
   const initialState = {
     app: {
-      processState: null,
+      processState: 'initial',
       feedback: null,
     },
     form: {
@@ -79,6 +119,7 @@ const app = (i18nInstance) => {
       posts: [],
     },
     ui: {
+      currentPost: null,
       readPosts: [],
     },
   };
@@ -106,37 +147,13 @@ const app = (i18nInstance) => {
     const validLinks = watchedState.data.feeds.map((feed) => feed.url);
     const schema = yupSchema(validLinks);
 
-    let proxyUrl;
-
     schema
       .validate(currentUrl)
-      .then((link) => {
+      .then(() => {
         watchedState.form.processState = 'valid';
         watchedState.app.processState = 'loading';
 
-        proxyUrl = proxy(link);
-
-        return axios.get(proxyUrl);
-      })
-      .then((response) => {
-        const parsedContent = parse(response.data.contents);
-        const { feed, posts } = parsedContent;
-
-        feed.id = _.uniqueId();
-        feed.url = currentUrl;
-        watchedState.data.feeds.push(feed);
-
-        posts.map((post) => {
-          post.feedId = feed.id;
-          post.id = _.uniqueId();
-          watchedState.data.posts.push(post);
-
-          return watchedState.data.posts;
-        });
-
-        watchedState.app.processState = 'loaded';
-        watchedState.app.feedback = 'feedback.succes';
-        watchedState.form.processState = 'filling';
+        loadFeed(currentUrl, watchedState);
       })
       .catch((error) => {
         console.log(error);
@@ -149,22 +166,22 @@ const app = (i18nInstance) => {
             watchedState.app.feedback = errorCode;
             watchedState.form.processState = 'invalid';
             break;
-          case 'Error':
-            if (error.message === 'Parsing Error') {
-              watchedState.app.processState = 'parsingError';
-              watchedState.app.feedback = 'feedback.errors.parsing_error';
-            }
-            break;
-          case 'AxiosError':
-            if (error.message === 'Network Error') {
-              watchedState.app.processState = 'networkError';
-              watchedState.app.feedback = 'feedback.errors.network_error';
-            }
-            break;
           default:
             throw new Error(`Unknown error name ${error.name}`);
         }
       });
+  });
+
+  elements.posts.addEventListener('click', (event) => {
+    const currentPostId = event.target.dataset.id;
+
+    if (currentPostId) {
+      watchedState.ui.currentPost = currentPostId;
+    }
+
+    if (!watchedState.ui.readPosts.includes(currentPostId)) {
+      watchedState.ui.readPosts.push(currentPostId);
+    }
   });
 
   setTimeout(updatePosts(watchedState), 5000);
@@ -179,10 +196,7 @@ const init = () => {
       debug: false,
       resources,
     })
-    .then(() => app(i18nInstance))
-    .catch((error) => {
-      throw new Error(`App initialization error: ${error}`);
-    });
+    .then(() => app(i18nInstance));
 };
 
 export default init;
