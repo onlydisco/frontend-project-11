@@ -21,6 +21,7 @@ const renderAppProcessState = (elements, appProcessState) => {
     case 'loaded':
       submit.disabled = false;
       form.reset();
+
       input.focus();
       break;
     case 'parsingError':
