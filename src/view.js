@@ -13,21 +13,23 @@ const renderInitText = (elements, i18nInstance) => {
   example.textContent = i18nInstance.t('example');
 };
 
-const renderAppProcessState = (elements, appProcessState) => {
-  const { form, input, submit } = elements;
+const renderLoadingProcessState = (elements, appProcessState, i18nInstance) => {
+  const {
+    form, input, submit, feedback,
+  } = elements;
 
   switch (appProcessState) {
     case 'loading':
       submit.disabled = true;
       break;
     case 'loaded':
+      feedback.textContent = i18nInstance.t('feedback.succes');
+      feedback.classList.replace('text-danger', 'text-success');
       submit.disabled = false;
       form.reset();
-
       input.focus();
       break;
-    case 'parsingError':
-    case 'networkError':
+    case 'failed':
       submit.disabled = false;
       break;
     default:
@@ -35,25 +37,10 @@ const renderAppProcessState = (elements, appProcessState) => {
   }
 };
 
-const renderFeedback = (elements, value, i18nInstance) => {
+const renderErrors = (elements, value, i18nInstance) => {
   const { feedback } = elements;
-
   feedback.textContent = i18nInstance.t(value);
-
-  switch (value) {
-    case 'feedback.succes':
-      feedback.classList.replace('text-danger', 'text-success');
-      break;
-    case 'feedback.errors.empty_field':
-    case 'feedback.errors.invalid_url':
-    case 'feedback.errors.duplicate_url':
-    case 'feedback.errors.parsing_error':
-    case 'feedback.errors.network_error':
-      feedback.classList.replace('text-success', 'text-danger');
-      break;
-    default:
-      throw new Error(`Unknown feedback value ${value}`);
-  }
+  feedback.classList.replace('text-success', 'text-danger');
 };
 
 const renderFormProcessState = (elements, formProcessState) => {
@@ -61,9 +48,11 @@ const renderFormProcessState = (elements, formProcessState) => {
 
   switch (formProcessState) {
     case 'filling':
+      input.classList.remove('is-invalid');
       submit.disabled = false;
       break;
     case 'validating':
+      input.classList.remove('is-invalid');
       submit.disabled = true;
       break;
     case 'valid':
@@ -210,13 +199,13 @@ const watch = (state, elements, i18nInstance) => {
 
   const watchedState = onChange(state, (path, value) => {
     switch (path) {
-      case 'app.processState':
-        renderAppProcessState(elements, value);
+      case 'loadingProcess':
+        renderLoadingProcessState(elements, value, i18nInstance);
         break;
-      case 'app.feedback':
-        renderFeedback(elements, value, i18nInstance);
+      case 'error':
+        renderErrors(elements, value, i18nInstance);
         break;
-      case 'form.processState':
+      case 'formProcess':
         renderFormProcessState(elements, value);
         break;
       case 'data.feeds':

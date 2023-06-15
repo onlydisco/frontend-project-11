@@ -15,6 +15,7 @@ export default {
         duplicate_url: 'RSS уже существует',
         parsing_error: 'Ресурс не содержит валидный RSS',
         network_error: 'Ошибка сети',
+        unknown_error: 'Неизвестная ошибка',
       },
     },
     feeds: 'Фиды',

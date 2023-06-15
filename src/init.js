@@ -44,34 +44,33 @@ const loadFeed = (currentUrl, watchedState) => {
       watchedState.data.feeds = [...watchedState.data.feeds, feed];
       watchedState.data.posts = [...watchedState.data.posts, ...posts];
 
-      watchedState.app.processState = 'loaded';
-      watchedState.app.feedback = 'feedback.succes';
-      watchedState.form.processState = 'filling';
+      watchedState.loadingProcess = 'loaded';
+      watchedState.formProcess = 'filling';
     })
     .catch((error) => {
       console.log(error);
 
-      switch (error.name) {
-        case 'AxiosError':
-          if (error.message === 'Network Error') {
-            watchedState.app.processState = 'networkError';
-            watchedState.app.feedback = 'feedback.errors.network_error';
-          }
-          break;
-        case 'Error':
-          if (error.message === 'Parsing Error') {
-            watchedState.app.processState = 'parsingError';
-            watchedState.app.feedback = 'feedback.errors.parsing_error';
-          }
-          break;
-        default:
-          throw new Error(`Unknown error name ${error.name}`);
+      if (error.isParsingError) {
+        watchedState.loadingProcess = 'failed';
+        watchedState.error = 'feedback.errors.parsing_error';
+
+        return;
       }
+
+      if (error.isAxiosError) {
+        watchedState.loadingProcess = 'failed';
+        watchedState.error = 'feedback.errors.network_error';
+
+        return;
+      }
+
+      watchedState.loadingProcess = 'failed';
+      watchedState.error = 'feedback.errors.unknown_error';
     });
 };
 
 const updatePosts = (watchedState) => {
-  const promises = watchedState.data.feeds.forEach(({ url, id }) => axios
+  const promises = watchedState.data.feeds.map(({ url, id }) => axios
     .get(proxy(url))
     .then((response) => {
       const { posts } = parse(response.data.contents);
@@ -108,13 +107,8 @@ const app = (i18nInstance) => {
   };
 
   const initialState = {
-    app: {
-      processState: 'initial',
-      feedback: null,
-    },
-    form: {
-      processState: 'filling',
-    },
+    loadingProcess: 'initial', // loading, loaded, failed
+    formProcess: 'filling', // validating, invalid
     data: {
       feeds: [],
       posts: [],
@@ -143,7 +137,7 @@ const app = (i18nInstance) => {
     const formData = new FormData(event.target);
     const currentUrl = formData.get('url');
 
-    watchedState.form.processState = 'validating';
+    watchedState.formProcess = 'validating';
 
     const validLinks = watchedState.data.feeds.map((feed) => feed.url);
     const schema = yupSchema(validLinks);
@@ -151,25 +145,17 @@ const app = (i18nInstance) => {
     schema
       .validate(currentUrl)
       .then(() => {
-        watchedState.form.processState = 'valid';
-        watchedState.app.processState = 'loading';
+        watchedState.formProcess = 'filling';
+        watchedState.loadingProcess = 'loading';
 
         loadFeed(currentUrl, watchedState);
       })
       .catch((error) => {
         console.log(error);
 
-        let errorCode;
-
-        switch (error.name) {
-          case 'ValidationError':
-            [errorCode] = error.errors;
-            watchedState.app.feedback = errorCode;
-            watchedState.form.processState = 'invalid';
-            break;
-          default:
-            throw new Error(`Unknown error name ${error.name}`);
-        }
+        const [errorCode] = error.errors;
+        watchedState.error = errorCode;
+        watchedState.formProcess = 'invalid';
       });
   });
 

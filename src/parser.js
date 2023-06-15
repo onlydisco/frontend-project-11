@@ -39,7 +39,10 @@ const parse = (content) => {
   const doc = parser.parseFromString(content, 'text/xml');
   const errorNode = doc.querySelector('parsererror');
   if (errorNode) {
-    throw new Error('Parsing Error');
+    const error = new Error(errorNode.textContent);
+    error.isParsingError = true;
+
+    throw error;
   }
 
   const feed = getFeed(doc);
