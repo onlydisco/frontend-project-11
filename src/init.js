@@ -17,6 +17,18 @@ const proxy = (link) => {
   return url;
 };
 
+const addFeedIdAndUrl = (feed, feedUrl) => {
+  feed.id = _.uniqueId();
+  feed.url = feedUrl;
+};
+
+const addPostId = (feedId, posts) => {
+  posts.forEach((post) => {
+    post.feedId = feedId;
+    post.id = _.uniqueId();
+  });
+};
+
 const loadFeed = (currentUrl, watchedState) => {
   const proxyUrl = proxy(currentUrl);
 
@@ -26,17 +38,11 @@ const loadFeed = (currentUrl, watchedState) => {
       const parsedContent = parse(response.data.contents);
       const { feed, posts } = parsedContent;
 
-      feed.id = _.uniqueId();
-      feed.url = currentUrl;
-      watchedState.data.feeds.push(feed);
+      addFeedIdAndUrl(feed, currentUrl);
+      addPostId(feed.id, posts);
 
-      posts.map((post) => {
-        post.feedId = feed.id;
-        post.id = _.uniqueId();
-        watchedState.data.posts.push(post);
-
-        return watchedState.data.posts;
-      });
+      watchedState.data.feeds = [...watchedState.data.feeds, feed];
+      watchedState.data.posts = [...watchedState.data.posts, ...posts];
 
       watchedState.app.processState = 'loaded';
       watchedState.app.feedback = 'feedback.succes';
@@ -65,7 +71,7 @@ const loadFeed = (currentUrl, watchedState) => {
 };
 
 const updatePosts = (watchedState) => {
-  const promises = watchedState.data.feeds.map(({ url, id }) => axios
+  const promises = watchedState.data.feeds.forEach(({ url, id }) => axios
     .get(proxy(url))
     .then((response) => {
       const { posts } = parse(response.data.contents);
@@ -78,13 +84,8 @@ const updatePosts = (watchedState) => {
 
       if (newPosts.length === 0) return;
 
-      newPosts.map((post) => {
-        post.feedId = id;
-        post.id = _.uniqueId();
-        watchedState.data.posts.push(post);
-
-        return watchedState.data.posts;
-      });
+      addPostId(id, newPosts);
+      watchedState.data.posts = [...watchedState.data.posts, ...newPosts];
     })
     .catch((error) => console.log(error)));
 
