@@ -48,18 +48,14 @@ const renderFormProcessState = (elements, formProcessState) => {
 
   switch (formProcessState) {
     case 'filling':
+      form.reset();
+      input.focus();
       input.classList.remove('is-invalid');
       submit.disabled = false;
       break;
     case 'validating':
       input.classList.remove('is-invalid');
       submit.disabled = true;
-      break;
-    case 'valid':
-      submit.disabled = false;
-      input.classList.remove('is-invalid');
-      form.reset();
-      input.focus();
       break;
     case 'invalid':
       submit.disabled = false;

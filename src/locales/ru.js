@@ -6,7 +6,7 @@ export default {
       input: 'Добавить',
       label: 'RSS ссылка',
     },
-    example: 'Пример: https://lorem-rss.hexlet.app/feed?unit=second&interval=5',
+    example: 'Пример: https://ru.hexlet.io/lessons.rss',
     feedback: {
       succes: 'RSS успешно загружен',
       errors: {
