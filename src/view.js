@@ -123,7 +123,7 @@ const renderPosts = (elements, postsList, i18nInstance) => {
   const list = document.createElement('ul');
   list.classList.add('list-group', 'border-0', 'rounded-0');
 
-  postsList.map((post) => {
+  postsList.forEach((post) => {
     const listItem = document.createElement('li');
     listItem.classList.add(
       'list-group-item',
