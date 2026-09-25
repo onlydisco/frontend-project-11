@@ -1,26 +1,37 @@
 {
-	"name": "@hexlet/code",
+	"name": "rss-aggregator",
 	"version": "1.0.0",
 	"type": "module",
-	"description": "Hexlet project",
+	"description": "A web application for reading and automatically updating RSS feeds",
 	"main": "./src/index.js",
 	"scripts": {
 		"build": "webpack --mode=production --node-env=production",
 		"build:dev": "webpack --mode=development",
 		"build:prod": "webpack --mode=production --node-env=production",
+		"lint": "eslint .",
 		"watch": "webpack --watch",
 		"start": "webpack serve"
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/onlydisco/frontend-project-11.git"
+		"url": "git+https://github.com/onlydisco/rss-aggregator.git"
 	},
 	"author": "Sergey Mukhin",
 	"license": "ISC",
-	"bugs": {
-		"url": "https://github.com/onlydisco/frontend-project-11/issues"
+	"keywords": [
+		"rss",
+		"rss-reader",
+		"rss-aggregator",
+		"javascript",
+		"webpack"
+	],
+	"engines": {
+		"node": ">=18"
 	},
-	"homepage": "https://github.com/onlydisco/frontend-project-11#readme",
+	"bugs": {
+		"url": "https://github.com/onlydisco/rss-aggregator/issues"
+	},
+	"homepage": "https://rss-aggregator-onlydisco.vercel.app",
 	"devDependencies": {
 		"@babel/core": "^7.21.8",
 		"@babel/preset-env": "^7.20.2",

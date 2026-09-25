@@ -10,4 +10,4 @@ build:
 lint:
 	npx eslint .
 
-.PHONY: test
+.PHONY: develop install build lint

@@ -1,13 +1,54 @@
-[![Actions Status](https://github.com/onlydisco/frontend-project-11/workflows/hexlet-check/badge.svg)](https://github.com/onlydisco/frontend-project-11/actions)
-[![Node CI](https://github.com/onlydisco/frontend-project-11/actions/workflows/nodejs.yml/badge.svg)](https://github.com/onlydisco/frontend-project-11/actions/workflows/nodejs.yml)
-[![Maintainability](https://api.codeclimate.com/v1/badges/558c666645bc95ee2dee/maintainability)](https://codeclimate.com/github/onlydisco/frontend-project-11/maintainability)
+# RSS Aggregator
 
-# 🚀 Welcome to your new awesome project!
+[![CI](https://github.com/onlydisco/rss-aggregator/actions/workflows/nodejs.yml/badge.svg)](https://github.com/onlydisco/rss-aggregator/actions/workflows/nodejs.yml)
 
-[RSS Generator](https://rss-aggregator-onlydisco.vercel.app)
+A simple web application for reading RSS feeds. Add an RSS feed URL to follow its posts, preview articles, and automatically receive updates without refreshing the page.
 
-This project has been created using **webpack-cli**, you can now run
+**[Live demo](https://rss-aggregator-onlydisco.vercel.app)**
 
+## Features
+
+- RSS feed URL validation
+- Multiple feed support
+- Automatic post updates every 5 seconds
+- Article previews in a modal window
+- Read post highlighting
+- User-friendly loading and error states
+
+## Tech stack
+
+JavaScript, Webpack, Axios, Bootstrap, Yup, i18next, and on-change.
+
+## Local development
+
+Requirements: Node.js 18 or newer and npm.
+
+```bash
+git clone git@github.com:onlydisco/rss-aggregator.git
+cd rss-aggregator
+npm ci
+npm start
 ```
-npm run build
+
+The development server will print the local application URL in the terminal.
+
+## Available commands
+
+```bash
+npm start       # Start the development server
+npm run build   # Create a production build in dist/
+npm run watch   # Rebuild on source changes
+npm run lint    # Run the linter
 ```
+
+## Deployment
+
+The project is configured for deployment on Vercel. The production build command is `npm run build`, and the output directory is `dist`.
+
+## Author
+
+[Sergey Mukhin](https://github.com/onlydisco)
+
+## License
+
+[ISC](LICENSE)
