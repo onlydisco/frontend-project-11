@@ -1,7 +1,5 @@
 # RSS Aggregator
 
-[![CI](https://github.com/onlydisco/rss-aggregator/actions/workflows/nodejs.yml/badge.svg)](https://github.com/onlydisco/rss-aggregator/actions/workflows/nodejs.yml)
-
 A simple web application for reading RSS feeds. Add an RSS feed URL to follow its posts, preview articles, and automatically receive updates without refreshing the page.
 
 **[Live demo](https://rss-aggregator-onlydisco.vercel.app)**
