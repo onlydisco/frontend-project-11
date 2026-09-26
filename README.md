@@ -1,4 +1,4 @@
-# RSS Aggregator
+# Hexlet RSS агрегатор
 
 A simple web application for reading RSS feeds. Add an RSS feed URL to follow its posts, preview articles, and automatically receive updates without refreshing the page.
 
@@ -22,8 +22,8 @@ JavaScript, Webpack, Axios, Bootstrap, Yup, i18next, and on-change.
 Requirements: Node.js 18 or newer and npm.
 
 ```bash
-git clone git@github.com:onlydisco/rss-aggregator.git
-cd rss-aggregator
+git clone git@github.com:onlydisco/hexlet-rss-aggregator.git
+cd hexlet-rss-aggregator
 npm ci
 npm start
 ```

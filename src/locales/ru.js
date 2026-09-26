@@ -1,6 +1,6 @@
 export default {
   translation: {
-    header: 'RSS агрегатор',
+    header: 'Hexlet RSS агрегатор',
     cta: 'Начните читать RSS сегодня! Это легко, это красиво.',
     form: {
       input: 'Добавить',

@@ -1,8 +1,8 @@
 {
-	"name": "rss-aggregator",
+	"name": "hexlet-rss-aggregator",
 	"version": "1.0.0",
 	"type": "module",
-	"description": "A web application for reading and automatically updating RSS feeds",
+	"description": "Hexlet RSS Aggregator — a web application for reading and automatically updating RSS feeds",
 	"main": "./src/index.js",
 	"scripts": {
 		"build": "webpack --mode=production --node-env=production",
@@ -14,14 +14,14 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/onlydisco/rss-aggregator.git"
+		"url": "git+https://github.com/onlydisco/hexlet-rss-aggregator.git"
 	},
 	"author": "Sergey Mukhin",
 	"license": "ISC",
 	"keywords": [
 		"rss",
 		"rss-reader",
-		"rss-aggregator",
+		"hexlet-rss-aggregator",
 		"javascript",
 		"webpack"
 	],
@@ -29,7 +29,7 @@
 		"node": ">=18"
 	},
 	"bugs": {
-		"url": "https://github.com/onlydisco/rss-aggregator/issues"
+		"url": "https://github.com/onlydisco/hexlet-rss-aggregator/issues"
 	},
 	"homepage": "https://rss-aggregator-onlydisco.vercel.app",
 	"devDependencies": {
